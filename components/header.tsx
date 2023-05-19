@@ -4,11 +4,13 @@ import { Row, Column } from "./element";
 import { FaServer, FaTimes, FaEllipsisH } from "react-icons/fa";
 import Logo from "./assets/image/logo.jpg";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import Link from "next/link";
 
 export const Header = () => {
   const [toggle, setToggle] = useState(false);
   const [toggle2, setToggle2] = useState(false);
-  const mouseMenu = useRef(null);
+  const mouseMenu = useRef<any>();
 
   const toggleMenu = () => {
     toggle === false ? setToggle(true) : setToggle(false);
@@ -16,20 +18,27 @@ export const Header = () => {
   const toggleMenu2 = () => {
     toggle2 === false ? setToggle2(true) : setToggle2(false);
   };
-  const closeOpenMenus = (e: any) => {
-    // if (mouseMenu.current && toggle && !mouseMenu.current.contains(e.target)) {
-    //   setToggle(false);
-    // }
+  const closeOpenMenus = (e: MouseEvent) => {
+    if (
+      mouseMenu.current &&
+      toggle &&
+      !mouseMenu?.current?.contains(e.target as Node)
+    ) {
+      setToggle(false);
+    }
   };
 
-  useEffect(() => {
-    // document.addEventListener("mousedown", closeOpenMenus);
-    // toggle ? disableBodyScroll(document) : enableBodyScroll(document);
-  }, [])
+  document.addEventListener("mousedown", closeOpenMenus);
+  toggle
+    ? disableBodyScroll(document as unknown as HTMLElement)
+    : enableBodyScroll(document as unknown as HTMLElement);
+
   return (
     <Wrapper>
       <WrapperContent>
-        <BackImage src={Logo.src} />
+        <Link href="/home">
+          <BackImage src={Logo.src} />
+        </Link>
         <MenuContent>
           <MenuContentItem href="/home#ourstory">ABOUT US</MenuContentItem>
           <MenuContentItem href="/home#team">FOUNDING MOLLUSKS</MenuContentItem>
@@ -81,7 +90,7 @@ export const Header = () => {
                   >
                     FAQs
                   </MenuContentItem>
-                  <MenuContentItem>COMING SOON</MenuContentItem>
+                  <MenuContentItem href="/whitelist">WhiteList</MenuContentItem>
                   {/* <MenuContentItem href="/minting">MINT</MenuContentItem>
                   <MenuContentItem href="/home#utillfaq">
                     UTILITY
@@ -129,7 +138,7 @@ const MenuContent = styled(Row)`
     display: none;
   }
 `;
-const MenuContentItem = styled.a`
+const MenuContentItem = styled(Link)`
   letter-spacing: 1.5px;
   font-size: 18px;
   color: #5b463f;
